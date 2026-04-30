@@ -3,7 +3,9 @@ const { default: books } = require("./books");
 const app = express();
 const port = 3000;
 
-// GET, POST, PUT, PATCH, DELETE
+app.use(express.json());
+
+// GET
 // app.get("/", (req, res) => {
 //   res.send("Belajar express");
 // });
@@ -64,5 +66,32 @@ app.get("/books/:id", (req, res) => {
   res.json({
     status: "OK",
     data: book,
+  });
+});
+
+// POST
+// Create Book
+app.post("/books", (req, res) => {
+  // mendapatkan req body
+  const { title, category, description } = req.body;
+
+  // mendapatkan new id
+  const lastItemBookId = books[books.length - 1].id;
+  const newIdBook = lastItemBookId + 1;
+
+  // menambahkan buku baru
+  const newBookData = {
+    id: newIdBook,
+    title: title,
+    category: category,
+    description: description,
+  };
+  books.push(newBookData);
+
+  // mengembalikan response ke client
+  res.status(201).json({
+    status: "OK",
+    message: "Success create new book",
+    data: newBookData,
   });
 });
