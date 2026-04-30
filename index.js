@@ -13,10 +13,10 @@ app.get("/about", (req, res) => {
   res.send("Ini halaman about");
 });
 
-// app.get("/users/:id", (req, res) => {
-//   const { id } = req.params;
-//   res.send(`Users dengan id ${id}`);
-// });
+app.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+  res.send(`Users dengan id ${id}`);
+});
 
 app.listen(port, () => {
   console.log(`Server running on port http://localhost:${port}`);
@@ -52,6 +52,13 @@ app.get("/books/:id", (req, res) => {
     if (books[i].id === Number(id)) {
       book = books[i];
     }
+  }
+
+  // handle not found
+  if (book === undefined) {
+    return res
+      .status(404)
+      .json({ status: "Failed", message: `Data book with id ${id} not found` });
   }
 
   res.json({
