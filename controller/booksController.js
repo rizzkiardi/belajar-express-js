@@ -1,13 +1,19 @@
 const { default: books } = require("../books");
 
-const findAllBooks = (req, res) => {
-  const data = books;
-  const result = {
-    status: "OK",
-    data: data,
-  };
+const { Book } = require("../models");
 
-  res.json(result);
+const findAllBooks = async (req, res) => {
+  try {
+    const data = await Book.findAll();
+    const result = {
+      status: "ok",
+      data: data,
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.log(error, "Error, find all books");
+  }
 };
 
 const getBookById = (req, res) => {
