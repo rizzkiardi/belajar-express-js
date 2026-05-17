@@ -3,6 +3,7 @@ const {
   getBookById,
   createNewBooks,
   updateBook,
+  destroyBook,
 } = require("../controller/booksController");
 
 const router = require("express").Router();
@@ -24,5 +25,9 @@ router.post("/books", createNewBooks);
 // PATCH
 // update books
 router.patch("/books/:id", updateBook);
+
+// DELETE
+// delete books
+router.delete("/books/:id", destroyBook);
 
 module.exports = router;

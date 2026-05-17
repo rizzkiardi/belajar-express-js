@@ -94,4 +94,33 @@ const updateBook = async (req, res) => {
   }
 };
 
-module.exports = { findAllBooks, getBookById, createNewBooks, updateBook };
+const destroyBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const book = await Book.findByPk(id);
+
+    if (!book) {
+      return res.status(404).json({
+        status: "failed",
+        message: `data book with id${id} is not exists`,
+      });
+    }
+
+    book.destroy();
+
+    res.json({
+      status: "ok",
+      message: `Success delete book with id ${id}`,
+    });
+  } catch (error) {
+    console.log(error, "Error destroy book");
+  }
+};
+
+module.exports = {
+  findAllBooks,
+  getBookById,
+  createNewBooks,
+  updateBook,
+  destroyBook,
+};
