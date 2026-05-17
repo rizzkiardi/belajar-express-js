@@ -9,59 +9,89 @@ const findAllBooks = async (req, res) => {
       status: "ok",
       data: data,
     };
-
     res.json(result);
   } catch (error) {
     console.log(error, "Error, find all books");
   }
 };
 
-const getBookById = (req, res) => {
-  const { id } = req.params;
-
-  let book;
-  // proses data looping data
-  for (let i = 0; i < books.length; i++) {
-    if (books[i].id === Number(id)) {
-      book = books[i];
+const getBookById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await Book.findByPk(id);
+    if (data === null) {
+      return res.status(404).json({
+        status: "failed",
+        message: `Data book with id ${id} is not found`,
+      });
     }
+    res.json({
+      status: "ok",
+      data: data,
+    });
+  } catch (error) {
+    console.log(error, "Error get book by ID");
   }
-
-  // handle not found
-  if (book === undefined) {
-    return res
-      .status(404)
-      .json({ status: "Failed", message: `Data book with id ${id} not found` });
-  }
-
-  res.json({
-    status: "OK",
-    data: book,
-  });
 };
 
-const createNewBooks = (req, res) => {
-  const { title, category, description } = req.body;
+const createNewBooks = async (req, res) => {
+  try {
+    const { title, category, description } = req.body;
+    const newBook = await Book.create({
+      title: title,
+      category: category,
+      description: description,
+    });
 
-  // mendapatkan new id
-  const lastItemBookId = books[books.length - 1].id;
-  const newIdBook = lastItemBookId + 1;
-
-  // menambahkan buku baru
-  const newBookData = {
-    id: newIdBook,
-    title: title,
-    category: category,
-    description: description,
-  };
-  books.push(newBookData);
-
-  // mengembalikan response ke client
-  res.status(201).json({
-    status: "OK",
-    message: "Success create new book",
-    data: newBookData,
-  });
+    res.status(201).json({
+      status: "ok",
+      data: {
+        title: newBook.title,
+        category: newBook.category,
+        description: newBook.description,
+        createdAt: newBook.createdAt,
+        udpatedAt: newBook.udpatedAt,
+      },
+    });
+  } catch (error) {
+    console.log(error, "Error create new book");
+  }
 };
 
-module.exports = { findAllBooks, getBookById, createNewBooks };
+const updateBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, category, description } = req.body;
+    const book = await Book.findByPk(id);
+
+    if (!book) {
+      return res.status(404).json({
+        status: "failed",
+        message: `data book with id${id} is not exists`,
+      });
+    }
+
+    book.title = title;
+    book.category = category;
+    book.description = description;
+    book.updatedAt = new Date();
+
+    book.save();
+
+    res.json({
+      status: "ok",
+      data: {
+        id: book.id,
+        title: book.title,
+        category: book.category,
+        description: book.description,
+        createdAt: book.createdAt,
+        updatedAt: book.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.log(error, "Error update book");
+  }
+};
+
+module.exports = { findAllBooks, getBookById, createNewBooks, updateBook };
